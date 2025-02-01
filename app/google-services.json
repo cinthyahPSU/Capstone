@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "160037790260",
+    "project_id": "capstone-359dd",
+    "storage_bucket": "capstone-359dd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:160037790260:android:128afea8609894b0452061",
+        "android_client_info": {
+          "package_name": "com.example.coworkingfinds"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDY1GvJtZ7CNAoNnKmZQ1em1s2Momlqs18"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
