@@ -5,6 +5,8 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,6 +21,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -40,6 +43,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
+
 
         // Initialize Location Client
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -70,13 +75,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void getUserLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
         fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
@@ -109,8 +107,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
                         if (results.length() == 0) {
                             Log.e("PLACES_API_ERROR", "No coworking spaces found!");
+                            Toast.makeText(this, "No coworking spaces found!", Toast.LENGTH_SHORT).show();
                             return;
                         }
+
+                        LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
 
                         for (int i = 0; i < results.length(); i++) {
                             JSONObject place = results.getJSONObject(i);
@@ -122,8 +123,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
                             LatLng placeLocation = new LatLng(lat, lng);
                             Log.d("PLACES_API_DATA", "Adding marker: " + name + " at " + lat + "," + lng);
-                            mMap.addMarker(new MarkerOptions().position(placeLocation).title(name).snippet(address));
+                            mMap.addMarker(new MarkerOptions()
+                                    .position(placeLocation)
+                                    .title(name)
+                                    .snippet(address));
+
+                            boundsBuilder.include(placeLocation);
                         }
+
+                        LatLngBounds bounds = boundsBuilder.build();
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100));
+
                     } catch (Exception e) {
                         Log.e("PLACES_API_ERROR", "Error parsing places JSON", e);
                     }
@@ -133,4 +143,5 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         requestQueue.add(request);
     }
+
 }

@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">CoworkingFinds</string>
+
+    <string-array name="filter_options">
+        <item>No Filters</item>
+        <item>Within 1 km</item>
+        <item>Within 5 km</item>
+        <item>Cheap ($)</item>
+        <item>Mid-range ($$)</item>
+        <item>Expensive ($$$)</item>
+        <item>Has WiFi</item>
+        <item>Has Parking</item>
+    </string-array>
 </resources>
