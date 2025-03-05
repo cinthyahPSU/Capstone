@@ -55,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
     private FusedLocationProviderClient fusedLocationClient;
     Location lastUserLocation;
 
+    private String photoReference; // Store the photo reference
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(androidx.appcompat.R.style.Theme_AppCompat);
@@ -82,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
         // RecyclerView setup
         coworkingSpacesList = new ArrayList<>();
-        this.adapter = new CoworkingAdapter(coworkingSpacesList);
+        this.adapter = new CoworkingAdapter(this,coworkingSpacesList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(this.adapter);
 
@@ -258,9 +260,13 @@ public class MainActivity extends AppCompatActivity {
 
         requestQueue.add(request);
     }
-    void searchCoworkingSpaces(String keyword) {
-        db.collection("coworking_spaces")
-                .whereGreaterThanOrEqualTo("name", keyword)
+    private void searchCoworkingSpaces(String keyword) {
+        CollectionReference spacesRef = db.collection("coworking_spaces");
+
+
+
+
+        spacesRef.whereGreaterThanOrEqualTo("name", keyword)
                 .whereLessThanOrEqualTo("name", keyword + "\uf8ff")
                 .get()
                 .addOnCompleteListener(task -> {
@@ -276,4 +282,5 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
+
 }

@@ -1,5 +1,8 @@
 package com.example.coworkingfinds;
 
+import android.content.Intent;
+import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,8 +15,9 @@ import java.util.List;
 
 public class CoworkingAdapter extends RecyclerView.Adapter<CoworkingAdapter.ViewHolder> {
     private List<CoworkingSpace> spacesList;
-
-    public CoworkingAdapter(List<CoworkingSpace> spacesList) {
+    private final Context context;
+    public CoworkingAdapter(Context context, List<CoworkingSpace> spacesList) {
+        this.context = context;
         this.spacesList = spacesList;
     }
 
@@ -31,8 +35,17 @@ public class CoworkingAdapter extends RecyclerView.Adapter<CoworkingAdapter.View
 
         holder.name.setText(space.getName());
         holder.address.setText(space.getAddress());
-    }
 
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, DetailsActivity.class);
+            intent.putExtra("name", space.getName());
+            intent.putExtra("address", space.getAddress());
+            intent.putExtra("latitude", space.getLatitude());
+            intent.putExtra("longitude", space.getLongitude());
+            intent.putExtra("amenities", space.getAmenities().toArray(new String[0]));
+            context.startActivity(intent);
+        });
+    }
 
     @Override
     public int getItemCount() {
