@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -31,6 +32,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import org.json.JSONArray;
@@ -41,7 +43,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
-    private static final String API_KEY = "AIzaSyDY1GvJtZ7CNAoNnKmZQ1em1s2Momlqs18";
+    static final String API_KEY = "AIzaSyDY1GvJtZ7CNAoNnKmZQ1em1s2Momlqs18";
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -143,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
     private void loadUserData(String userId) {
         db.collection("users").document(userId).get()
                 .addOnSuccessListener(documentSnapshot -> {
@@ -223,13 +226,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Search coworking spaces using Google Places API
-    private void searchNearbyCoworkingSpaces(double latitude, double longitude, double radius, String keyword, String priceFilter) {
+   private void searchNearbyCoworkingSpaces(double latitude, double longitude, double radius, String keyword, String priceFilter) {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
 
         String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?" +
                 "location=" + latitude + "," + longitude +
                 "&radius=" + radius +
-                "&type=cafe" +
+                "&type=cafe" +  // You can modify this if needed
                 "&keyword=" + keyword +
                 priceFilter +
                 "&key=" + API_KEY;
@@ -247,7 +250,34 @@ public class MainActivity extends AppCompatActivity {
                             String name = place.optString("name", "Unknown Name");
                             String address = place.optString("vicinity", "No Address Available");
 
-                            coworkingSpacesList.add(new CoworkingSpace(name, address));
+                            // Extract photo reference
+                            String photoReference = "";
+                            if (place.has("photos")) {
+                                JSONArray photos = place.getJSONArray("photos");
+                                if (photos.length() > 0) {
+                                    photoReference = photos.getJSONObject(0).optString("photo_reference", "No Photo Available");
+                                }
+                            }
+
+                            // Extract rating
+                            double rating = place.optDouble("rating", 0.0);
+
+                            JSONArray typesArray = place.optJSONArray("types");
+                            List<String> amenitiesList = new ArrayList<>();
+
+                            if (typesArray != null) {
+                                for (int j = 0; j < typesArray.length(); j++) {
+                                    String type = typesArray.getString(j);
+                                    if (type.contains("wifi") || type.equals("internet_cafe")) {
+                                        amenitiesList.add("WiFi");
+                                    }
+                                    if (type.contains("parking") || type.equals("car_parking")) {
+                                        amenitiesList.add("Parking");
+                                    }
+                                }
+                            }
+
+                            coworkingSpacesList.add(new CoworkingSpace(name, address, photoReference, amenitiesList,rating));
                         }
 
                         adapter.notifyDataSetChanged();
@@ -260,27 +290,79 @@ public class MainActivity extends AppCompatActivity {
 
         requestQueue.add(request);
     }
+
     private void searchCoworkingSpaces(String keyword) {
-        CollectionReference spacesRef = db.collection("coworking_spaces");
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
 
+        // Construct the Google Places API request URL
+        String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?" +
+                "query=" + Uri.encode(keyword + " coworking") +  // Encode search term
+                "&type=cafe" +  // This helps narrow down to coworking spaces
+                "&key=" + API_KEY;
 
+        Log.d("PLACES_API_REQUEST", "Requesting: " + url);
 
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                response -> {
+                    try {
+                        JSONArray results = response.getJSONArray("results");
 
-        spacesRef.whereGreaterThanOrEqualTo("name", keyword)
-                .whereLessThanOrEqualTo("name", keyword + "\uf8ff")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        coworkingSpacesList.clear();
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            CoworkingSpace space = document.toObject(CoworkingSpace.class);
-                            coworkingSpacesList.add(space);
+                        if (results.length() == 0) {
+                            Log.e("PLACES_API_ERROR", "No coworking spaces found!");
+                            Toast.makeText(this, "No coworking spaces found!", Toast.LENGTH_SHORT).show();
+                            return;
                         }
-                        adapter.notifyDataSetChanged();
-                    } else {
-                        Log.w("FirestoreSearch", "Error getting documents.", task.getException());
+
+                        coworkingSpacesList.clear();
+
+                        for (int i = 0; i < results.length(); i++) {
+                            JSONObject place = results.getJSONObject(i);
+                            String name = place.optString("name", "Unknown Name");
+                            String address = place.optString("formatted_address", "No Address Available");
+
+                            // Extract photo reference
+                            String photoReference = "";
+                            if (place.has("photos")) {
+                                JSONArray photos = place.getJSONArray("photos");
+                                if (photos.length() > 0) {
+                                    photoReference = photos.getJSONObject(0).optString("photo_reference", "");
+                                }
+                            }
+
+                            // Extract rating
+                            double rating = place.optDouble("rating", 0.0);
+
+                            JSONArray typesArray = place.optJSONArray("types");
+                            List<String> amenitiesList = new ArrayList<>();
+
+                            if (typesArray != null) {
+                                for (int j = 0; j < typesArray.length(); j++) {
+                                    String type = typesArray.getString(j);
+                                    if (type.contains("wifi") || type.equals("internet_cafe")) {
+                                        amenitiesList.add("WiFi");
+                                    }
+                                    if (type.contains("parking") || type.equals("car_parking")) {
+                                        amenitiesList.add("Parking");
+                                    }
+                                }
+                            }
+
+                            // Add coworking space to the list
+                            coworkingSpacesList.add(new CoworkingSpace(name, address, photoReference, amenitiesList, rating));
+                        }
+
+                        adapter.notifyDataSetChanged();  // Refresh RecyclerView
+
+                    } catch (Exception e) {
+                        Log.e("PLACES_API_ERROR", "Error parsing places JSON", e);
                     }
-                });
+                },
+                error -> Log.e("PLACES_API_ERROR", "API request failed", error)
+        );
+
+        requestQueue.add(request);
     }
+
+
 
 }

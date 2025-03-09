@@ -38,11 +38,7 @@ public class CoworkingAdapter extends RecyclerView.Adapter<CoworkingAdapter.View
 
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, DetailsActivity.class);
-            intent.putExtra("name", space.getName());
-            intent.putExtra("address", space.getAddress());
-            intent.putExtra("latitude", space.getLatitude());
-            intent.putExtra("longitude", space.getLongitude());
-            intent.putExtra("amenities", space.getAmenities().toArray(new String[0]));
+            intent.putExtra("coworking_space", space);
             context.startActivity(intent);
         });
     }

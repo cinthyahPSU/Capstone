@@ -3,18 +3,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp">
-    <Spinner
-        android:id="@+id/filter_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:entries="@array/filter_options" />
-
-    <Button
-        android:id="@+id/apply_filter_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Apply Filter" />
-
 
     <TextView
         android:id="@+id/welcome_text"
@@ -28,10 +16,24 @@
         android:layout_height="wrap_content"
         android:queryHint="Search coworking spaces..." />
 
+    <Spinner
+        android:id="@+id/filter_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:entries="@array/filter_options" />
+
+
+    <Button
+        android:id="@+id/apply_filter_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Apply Filter" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
     <Button
         android:id="@+id/openMapButton"
         android:layout_width="wrap_content"

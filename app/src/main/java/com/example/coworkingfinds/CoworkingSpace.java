@@ -1,34 +1,31 @@
 package com.example.coworkingfinds;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CoworkingSpace {
+public class CoworkingSpace implements Serializable {
     private String name;
     private String address;
-    private double latitude;
-    private double longitude;
+    private String photoReference;
+    private double rating;
     private List<String> amenities;
-
 
     public CoworkingSpace() {}
 
-
-    public CoworkingSpace(String name, String address, double latitude, double longitude, List<String> amenities) {
-        this.name = (name != null) ? name : "Unknown Name";  // Prevents null values
-        this.address = (address != null) ? address : "Address Not Available";
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.amenities = (amenities != null) ? amenities : new ArrayList<>();  // Avoids null lists
-    }
-
-    public CoworkingSpace(String name, String address) {
-        this(name, address, 0.0, 0.0, new ArrayList<>());
+    public CoworkingSpace(String name, String address, String photoReference, List<String> amenities, double rating) {
+        this.name = name;
+        this.address = address;
+        this.photoReference = photoReference;
+        this.rating = rating;
+        this.amenities = (amenities != null) ? amenities : new ArrayList<>();
     }
 
     public String getName() { return name; }
     public String getAddress() { return address; }
-    public double getLatitude() { return latitude; }
-    public double getLongitude() { return longitude; }
-    public List<String> getAmenities() { return amenities; }
+    public String getPhotoReference() { return photoReference; }
+    public double getRating() { return rating; }
+    public List<String> getAmenities() {
+        return amenities;
+    }
 }
