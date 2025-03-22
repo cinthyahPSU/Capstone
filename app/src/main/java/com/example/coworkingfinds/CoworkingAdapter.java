@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,9 +17,12 @@ import java.util.List;
 public class CoworkingAdapter extends RecyclerView.Adapter<CoworkingAdapter.ViewHolder> {
     private List<CoworkingSpace> spacesList;
     private final Context context;
+    private DatabaseHelper dbHelper;
+
     public CoworkingAdapter(Context context, List<CoworkingSpace> spacesList) {
         this.context = context;
         this.spacesList = spacesList;
+        this.dbHelper = new DatabaseHelper(context);
     }
 
     @NonNull
@@ -36,6 +40,22 @@ public class CoworkingAdapter extends RecyclerView.Adapter<CoworkingAdapter.View
         holder.name.setText(space.getName());
         holder.address.setText(space.getAddress());
 
+        if (dbHelper.isFavorite(space.getName())) {
+            holder.favoriteIcon.setImageResource(R.drawable.baseline_star_24);
+        } else {
+            holder.favoriteIcon.setImageResource(R.drawable.baseline_star_border_24); // Empty star
+        }
+
+        holder.favoriteIcon.setOnClickListener(v -> {
+            if (dbHelper.isFavorite(space.getName())) {
+                dbHelper.removeFavorite(space.getName());
+                holder.favoriteIcon.setImageResource(R.drawable.baseline_star_border_24);
+            } else {
+                dbHelper.addFavorite(space);
+                holder.favoriteIcon.setImageResource(R.drawable.baseline_star_24);
+            }
+        });
+
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, DetailsActivity.class);
             intent.putExtra("coworking_space", space);
@@ -50,11 +70,13 @@ public class CoworkingAdapter extends RecyclerView.Adapter<CoworkingAdapter.View
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView name, address;
+        ImageView favoriteIcon;
 
         public ViewHolder(View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.space_name);
             address = itemView.findViewById(R.id.space_address);
+            favoriteIcon = itemView.findViewById(R.id.favorite_icon);
         }
     }
 }

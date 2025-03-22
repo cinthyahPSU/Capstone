@@ -4,7 +4,13 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="8dp">
-
+    <ImageView
+        android:id="@+id/favorite_icon"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/baseline_star_border_24"
+    android:padding="8dp"/>
     <TextView
         android:id="@+id/space_name"
         android:layout_width="wrap_content"

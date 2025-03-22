@@ -14,7 +14,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ArrayAdapter;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -31,9 +30,6 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -74,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
         openMapButton = findViewById(R.id.openMapButton);
         searchView = findViewById(R.id.searchView);
         recyclerView = findViewById(R.id.recyclerView);
+
 
         // Set up filter options
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
@@ -126,6 +123,12 @@ public class MainActivity extends AppCompatActivity {
         // Open Map when the button is clicked
         openMapButton.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, MapActivity.class);
+            startActivity(intent);
+        });
+
+        Button openFavoritesButton = findViewById(R.id.openFavoritesButton);
+        openFavoritesButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, FavoritesActivity.class);
             startActivity(intent);
         });
 
