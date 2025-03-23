@@ -19,6 +19,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.espresso.idling.CountingIdlingResource;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -54,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
     Location lastUserLocation;
 
     private String photoReference; // Store the photo reference
+    public static CountingIdlingResource idlingResource = new CountingIdlingResource("PlacesApiCall");
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
