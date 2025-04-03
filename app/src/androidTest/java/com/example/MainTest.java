@@ -7,6 +7,7 @@ import android.widget.Toast;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.IdlingRegistry;
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -92,24 +93,15 @@ public class MainTest {
 
 
     @Test
-    public void TC5() {
+    public void TC5() throws InterruptedException {
         ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class);
-
-        scenario.onActivity(activity ->
-                IdlingRegistry.getInstance().register(MainActivity.idlingResource)
-        );
-
         onView(withId(R.id.filter_spinner)).perform(click());
         onData(allOf(is(instanceOf(String.class)), is("Has WiFi"))).perform(click());
         onView(withId(R.id.apply_filter_button)).perform(click());
-
-        // Espresso will now wait until the API call completes
+        Thread.sleep(5000);
         onView(withId(R.id.recyclerView)).check(matches(isDisplayed()));
-
-        scenario.onActivity(activity ->
-                IdlingRegistry.getInstance().unregister(MainActivity.idlingResource)
-        );
     }
+
 
 
     @Test
@@ -142,4 +134,6 @@ public class MainTest {
         ActivityScenario.launch(intent);
         onView(withId(R.id.location_name)).check(matches(withText("Place")));
     }
+
+
 }

@@ -42,5 +42,13 @@
         android:text="Rating"
         android:textSize="16sp"
         android:paddingTop="4dp"/>
+    <TextView
+        android:id="@+id/yelp_reviews_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Loading reviews..."
+        android:padding="16dp"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
 
 </LinearLayout>

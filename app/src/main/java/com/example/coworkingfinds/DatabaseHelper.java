@@ -10,7 +10,7 @@ import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "favorites.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static final String TABLE_FAVORITES = "favorites";
 
     private static final String COLUMN_ID = "id";
@@ -18,6 +18,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_ADDRESS = "address";
     private static final String COLUMN_PHOTO = "photo";
     private static final String COLUMN_RATING = "rating";
+    private static final String COLUMN_LATITUDE = "latitude";
+    private static final String COLUMN_LONGITUDE = "longitude";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -30,12 +32,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COLUMN_NAME + " TEXT, " +
                 COLUMN_ADDRESS + " TEXT, " +
                 COLUMN_PHOTO + " TEXT, " +
-                COLUMN_RATING + " REAL)";
+                COLUMN_RATING + " REAL, " +
+                COLUMN_LATITUDE + " REAL, " +
+                COLUMN_LONGITUDE + " REAL)";
         db.execSQL(CREATE_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        // Drop and recreate if upgrading schema (simple way)
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_FAVORITES);
         onCreate(db);
     }
@@ -47,6 +52,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_ADDRESS, space.getAddress());
         values.put(COLUMN_PHOTO, space.getPhotoReference());
         values.put(COLUMN_RATING, space.getRating());
+        values.put(COLUMN_LATITUDE, space.getLatitude());
+        values.put(COLUMN_LONGITUDE, space.getLongitude());
         db.insert(TABLE_FAVORITES, null, values);
         db.close();
     }
@@ -78,8 +85,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 String address = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ADDRESS));
                 String photo = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PHOTO));
                 double rating = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_RATING));
+                double latitude = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_LATITUDE));
+                double longitude = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_LONGITUDE));
 
-                favoritesList.add(new CoworkingSpace(name, address, photo, new ArrayList<>(), rating));
+                favoritesList.add(new CoworkingSpace(name, address, photo, new ArrayList<>(), rating, latitude, longitude));
             } while (cursor.moveToNext());
         }
         cursor.close();
