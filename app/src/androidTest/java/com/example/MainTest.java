@@ -73,7 +73,7 @@ public class MainTest {
     }
 
     @Test
-    public void TC3() {
+    public void TC3() throws InterruptedException {
         ActivityScenario.launch(MainActivity.class);
 
         // Open and type into the SearchView
@@ -81,7 +81,7 @@ public class MainTest {
         onView(withId(androidx.appcompat.R.id.search_src_text))
                 .perform(typeText("coworking"), pressKey(KeyEvent.KEYCODE_ENTER));
 
-        // Confirm the list is visible (or results populated)
+        Thread.sleep(5000);
         onView(withId(R.id.recyclerView)).check(matches(isDisplayed()));
     }
 
@@ -110,11 +110,12 @@ public class MainTest {
     }
 
     @Test
-    public void TC8() {
+    public void TC8() throws InterruptedException {
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), DetailsActivity.class);
         CoworkingSpace mockSpace = new CoworkingSpace("Place", "Address", "photo_ref", Arrays.asList("WiFi", "Parking"), 4.5);
         intent.putExtra("coworking_space", mockSpace);
         ActivityScenario.launch(intent);
+        Thread.sleep(5000);
         onView(withId(R.id.location_name)).check(matches(withText("Place")));
     }
 
@@ -134,6 +135,26 @@ public class MainTest {
         ActivityScenario.launch(intent);
         onView(withId(R.id.location_name)).check(matches(withText("Place")));
     }
+    @Test
+    public void TC6() throws InterruptedException {
+        ActivityScenario.launch(MainActivity.class);
+
+        Thread.sleep(5000);
+
+        onView(withId(R.id.recyclerView))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+
+        Thread.sleep(4000);
+
+        onView(withId(R.id.yelp_reviews_text))
+                .check(matches(anyOf(
+                        withText(containsString("review")),
+                        withText(containsString("No reviews found"))
+                )));
+    }
+
+
+
 
 
 }
