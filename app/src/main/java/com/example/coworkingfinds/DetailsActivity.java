@@ -23,8 +23,10 @@ import java.util.List;
 public class DetailsActivity extends AppCompatActivity {
     private TextView nameText, addressText, amenitiesText, ratingText, reviewsText;
     private ImageView placeImage;
+    private ImageView favoriteButton;
+    private DatabaseHelper dbHelper;
 
-    private static final String YELP_API_KEY = "YOUR_YELP_API_KEY";
+    private static final String YELP_API_KEY = "t1GDYEzl9np6-DDZRbGJL_DuWwgQH1JhLF0CuQBf0WdTBa2eSi19YlSVeNmsnSCZ18qwgfGM-_MG_qun7Vj4Fpnq57-JRLgxaLrRfMe-aq0tXNEoG-bjJ1Bh-XLpZ3Yx";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +39,8 @@ public class DetailsActivity extends AppCompatActivity {
         ratingText = findViewById(R.id.location_rating);
         reviewsText = findViewById(R.id.yelp_reviews_text);
         placeImage = findViewById(R.id.place_image);
+        favoriteButton = findViewById(R.id.favorite_button); // new
+        dbHelper = new DatabaseHelper(this); // new
 
         CoworkingSpace space = (CoworkingSpace) getIntent().getSerializableExtra("coworking_space");
 
@@ -66,6 +70,24 @@ public class DetailsActivity extends AppCompatActivity {
                         "&key=" + API_KEY;
                 Glide.with(this).load(imageUrl).into(placeImage);
             }
+
+            // Set initial favorite icon
+            if (dbHelper.isFavorite(space.getName())) {
+                favoriteButton.setImageResource(R.drawable.baseline_star_24);
+            } else {
+                favoriteButton.setImageResource(R.drawable.baseline_star_border_24);
+            }
+
+            // Toggle favorite
+            favoriteButton.setOnClickListener(v -> {
+                if (dbHelper.isFavorite(space.getName())) {
+                    dbHelper.removeFavorite(space.getName());
+                    favoriteButton.setImageResource(R.drawable.baseline_star_border_24);
+                } else {
+                    dbHelper.addFavorite(space);
+                    favoriteButton.setImageResource(R.drawable.baseline_star_24);
+                }
+            });
 
             // Fetch Yelp reviews
             fetchYelpReviews(space.getLatitude(), space.getLongitude(), space.getName());

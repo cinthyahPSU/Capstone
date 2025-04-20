@@ -46,7 +46,7 @@ dependencies {
         exclude(group = "com.google.protobuf", module = "protobuf-lite")
     }
 
-    implementation ("com.google.protobuf:protobuf-javalite:3.24.0")
+    implementation ("com.google.protobuf:protobuf-javalite:3.21.12")
 
     implementation("com.google.android.libraries.places:places:3.3.0")
     implementation("com.google.maps.android:android-maps-utils:3.4.0")

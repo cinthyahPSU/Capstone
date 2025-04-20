@@ -2,7 +2,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@color/background_blue">
+
 
     <TextView
         android:id="@+id/welcome_text"
@@ -10,45 +12,82 @@
         android:layout_height="wrap_content"
         android:text="Welcome!" />
 
-    <SearchView
-        android:id="@+id/searchView"
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:queryHint="Search coworking spaces..." />
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp"
+        android:gravity="center_vertical">
 
-    <Spinner
-        android:id="@+id/filter_spinner"
-        android:layout_width="wrap_content"
+        <SearchView
+            android:id="@+id/searchView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:queryHint="Search coworking spaces..." />
+
+        <ImageButton
+            android:id="@+id/openFavoritesButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="View Favorites"
+            android:src="@drawable/baseline_star_24" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:entries="@array/filter_options" />
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp"
+        android:gravity="center_vertical">
 
+        <Spinner
+            android:id="@+id/filter_spinner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:entries="@array/filter_options" />
 
-    <Button
-        android:id="@+id/apply_filter_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Apply Filter" />
+        <Button
+            android:id="@+id/apply_filter_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Apply"
+            android:layout_marginStart="8dp"
+            android:background="@color/dark_blue"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="16dp" />
+
 
     <Button
         android:id="@+id/openMapButton"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="View Map"
-        android:layout_margin="20dp"/>
+        android:layout_marginTop="12dp"
+        android:background="@color/dark_blue"
+        android:textColor="@android:color/white" />
+
+
     <Button
         android:id="@+id/logout_button"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Logout" />
-    <Button
-        android:id="@+id/openFavoritesButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="View Favorites"/>
+        android:text="Logout"
+        android:layout_marginTop="8dp"
+        android:background="@color/dark_blue"
+        android:textColor="@android:color/white" />
 
 </LinearLayout>

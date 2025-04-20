@@ -4,9 +4,11 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -71,6 +73,12 @@ public class MainActivity extends AppCompatActivity {
         openMapButton = findViewById(R.id.openMapButton);
         searchView = findViewById(R.id.searchView);
         recyclerView = findViewById(R.id.recyclerView);
+
+        ImageButton openFavoritesButton = findViewById(R.id.openFavoritesButton);
+        openFavoritesButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, FavoritesActivity.class);
+            startActivity(intent);
+        });
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 this, R.array.filter_options, android.R.layout.simple_spinner_item);
@@ -269,22 +277,46 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void searchCoworkingSpaces(String keyword) {
-        CollectionReference spacesRef = db.collection("coworking_spaces");
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
 
-        spacesRef.whereGreaterThanOrEqualTo("name", keyword)
-                .whereLessThanOrEqualTo("name", keyword + "\uf8ff")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
+        String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?" +
+                "query=" + Uri.encode(keyword + " coworking") +
+                "&key=" + API_KEY;
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                response -> {
+                    try {
+                        JSONArray results = response.getJSONArray("results");
                         coworkingSpacesList.clear();
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            CoworkingSpace space = document.toObject(CoworkingSpace.class);
-                            coworkingSpacesList.add(space);
+
+                        for (int i = 0; i < results.length(); i++) {
+                            JSONObject place = results.getJSONObject(i);
+                            String name = place.optString("name", "Unknown Name");
+                            String address = place.optString("formatted_address", "No Address Available");
+
+                            String photoReference = "";
+                            if (place.has("photos")) {
+                                JSONArray photos = place.getJSONArray("photos");
+                                if (photos.length() > 0) {
+                                    photoReference = photos.getJSONObject(0).optString("photo_reference", "");
+                                }
+                            }
+
+                            double rating = place.optDouble("rating", 0.0);
+                            double lat = place.optJSONObject("geometry").optJSONObject("location").optDouble("lat");
+                            double lng = place.optJSONObject("geometry").optJSONObject("location").optDouble("lng");
+
+                            coworkingSpacesList.add(new CoworkingSpace(name, address, photoReference, new ArrayList<>(), rating, lat, lng));
                         }
+
                         adapter.notifyDataSetChanged();
-                    } else {
-                        Log.w("FirestoreSearch", "Error getting documents.", task.getException());
+                    } catch (Exception e) {
+                        Log.e("PLACES_API_ERROR", "Parsing error", e);
                     }
-                });
+                },
+                error -> Log.e("PLACES_API_ERROR", "API request failed", error)
+        );
+
+        requestQueue.add(request);
     }
 }
