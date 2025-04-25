@@ -12,6 +12,19 @@ public class CoworkingSpace implements Serializable {
     private List<String> amenities;
     private double latitude;
     private double longitude;
+    private double distance;
+    private double heuristicScore;
+
+    public double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(double distance) {
+        this.distance = distance;
+    }
+
+    public double getHeuristicScore() { return heuristicScore; }
+    public void setHeuristicScore(double heuristicScore) { this.heuristicScore = heuristicScore; }
 
     public CoworkingSpace() {}
 

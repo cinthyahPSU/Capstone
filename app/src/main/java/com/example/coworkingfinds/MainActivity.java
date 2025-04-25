@@ -244,7 +244,6 @@ public class MainActivity extends AppCompatActivity {
 
                             JSONArray typesArray = place.optJSONArray("types");
                             List<String> amenitiesList = new ArrayList<>();
-
                             if (typesArray != null) {
                                 for (int j = 0; j < typesArray.length(); j++) {
                                     String type = typesArray.getString(j);
@@ -262,10 +261,34 @@ public class MainActivity extends AppCompatActivity {
                             double lat = location != null ? location.optDouble("lat", 0.0) : 0.0;
                             double lng = location != null ? location.optDouble("lng", 0.0) : 0.0;
 
-                            coworkingSpacesList.add(new CoworkingSpace(name, address, photoReference, amenitiesList, rating, lat, lng));
+                            CoworkingSpace space = new CoworkingSpace(name, address, photoReference, amenitiesList, rating, lat, lng);
+
+                            // Calculate distance
+                            Location userLoc = new Location("");
+                            userLoc.setLatitude(latitude);
+                            userLoc.setLongitude(longitude);
+
+                            Location placeLoc = new Location("");
+                            placeLoc.setLatitude(lat);
+                            placeLoc.setLongitude(lng);
+
+                            double distanceInKm = userLoc.distanceTo(placeLoc) / 1000.0;
+                            space.setDistance(distanceInKm);
+
+                            // Heuristic scoring
+                            double score = ((5 - distanceInKm) * 0.3) + (rating * 0.7);
+                            space.setHeuristicScore(score);
+
+                            coworkingSpacesList.add(space);
                         }
 
+                        // Sort by heuristic score descending
+                        coworkingSpacesList.sort((a, b) -> Double.compare(b.getHeuristicScore(), a.getHeuristicScore()));
+
+                        adapter = new CoworkingAdapter(this, coworkingSpacesList);
+                        recyclerView.setAdapter(adapter);
                         adapter.notifyDataSetChanged();
+
                     } catch (Exception e) {
                         Log.e("PLACES_API_ERROR", "Error parsing places JSON", e);
                     }
@@ -275,6 +298,7 @@ public class MainActivity extends AppCompatActivity {
 
         requestQueue.add(request);
     }
+
 
     private void searchCoworkingSpaces(String keyword) {
         RequestQueue requestQueue = Volley.newRequestQueue(this);

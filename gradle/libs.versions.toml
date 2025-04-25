@@ -8,6 +8,7 @@ material = "1.12.0"
 espressoIdlingResource = "3.6.1"
 espressoContrib = "3.6.1"
 espressoIntents = "3.6.1"
+supportAnnotations = "28.0.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -18,6 +19,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 espresso-idling-resource = { group = "androidx.test.espresso", name = "espresso-idling-resource", version.ref = "espressoIdlingResource" }
 espresso-contrib = { group = "androidx.test.espresso", name = "espresso-contrib", version.ref = "espressoContrib" }
 espresso-intents = { group = "androidx.test.espresso", name = "espresso-intents", version.ref = "espressoIntents" }
+support-annotations = { group = "com.android.support", name = "support-annotations", version.ref = "supportAnnotations" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
